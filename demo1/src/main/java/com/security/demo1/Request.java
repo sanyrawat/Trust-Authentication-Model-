@@ -97,7 +97,7 @@ public class Request {
     }
 
     @RequestMapping(value = "/download", method = RequestMethod.GET)
-    public void downloadFileFromLocal(HttpServletRequest request, HttpServletResponse response, @RequestParam("file") String file,@RequestParam("private-key") Integer privateKey) throws Exception {
+    public void downloadFileFromLocal(HttpServletRequest request, HttpServletResponse response, @RequestParam("file") String file,@RequestHeader("private-key") Integer privateKey) throws Exception {
         String home = System.getProperty("user.home");
         String folderName = "C://Users//The Arav//Downloads//fileUpload//";//home + "/Documents/fileUpload/";
         File getFile = new File(folderName + file + ".encrypted");
