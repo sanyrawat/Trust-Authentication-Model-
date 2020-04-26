@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -96,19 +97,20 @@ public class Request {
     }
 
     @RequestMapping(value = "/download", method = RequestMethod.GET)
-    public void downloadFileFromLocal(HttpServletRequest request, HttpServletResponse response, @RequestParam("file") String file) throws Exception {
+    public void downloadFileFromLocal(HttpServletRequest request, HttpServletResponse response, @RequestParam("file") String file,@RequestParam("private-key") Integer privateKey) throws Exception {
         String home = System.getProperty("user.home");
-        String folderName = home + "/Documents/fileUpload/";
+        String folderName = "C://Users//The Arav//Downloads//fileUpload//";//home + "/Documents/fileUpload/";
         File getFile = new File(folderName + file + ".encrypted");
         if (getFile.exists()) {
             File tempFile = new File(folderName + file);
             if (!tempFile.exists())
                 tempFile.createNewFile();
-            TestFileEncryption.decrypt(getFile, tempFile);
+            TestFileEncryption.decrypt(getFile, tempFile,privateKey);
             Files.copy(Paths.get(tempFile.getAbsolutePath()), response.getOutputStream());
             response.getOutputStream().flush();
             if (tempFile.exists()) {
                 tempFile.delete();
+                
             }
         } else {
             throw new FileNotFoundException("file not found");
@@ -122,14 +124,15 @@ public class Request {
     }
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Object> uploadFile(HttpServletRequest request, HttpServletResponse response, @RequestParam("file") MultipartFile file) throws Exception {
+    public ResponseEntity<Object> uploadFile(HttpServletRequest request, HttpServletResponse response, @RequestParam("file") MultipartFile file,@RequestHeader("private-key") Integer privateKey) throws Exception {
 
         String home = System.getProperty("user.home");
-        String folderName = home + "/Documents/fileUpload/";
+        //String folderName = home + "/Documents/fileUpload/";
+        String folderName = "C://Users//The Arav//Downloads//fileUpload//";
         File convertFile = new File(folderName + file.getOriginalFilename() + ".encrypted");
         if (!convertFile.exists())
             convertFile.createNewFile();
-        TestFileEncryption.encrypt(file.getBytes(), convertFile);
+        TestFileEncryption.encrypt(file.getBytes(), convertFile, privateKey);
         return new ResponseEntity<>("File is Uploaded Successfully", HttpStatus.OK);
     }
 
